@@ -48,7 +48,7 @@
 
 ```bash
 git clone https://github.com/hzxjcx/SupabaseDBManager.git
-cd AS.Tools.SupabaseDBManager
+cd SupabaseDBManager
 ```
 
 ### 2️⃣ 配置数据库连接
