@@ -48,7 +48,7 @@
 
 ```bash
 git clone https://github.com/hzxjcx/SupabaseDBManager.git
-cd AS.Tools.SupabaseDBManager
+cd SupabaseDBManager
 ```
 
 ### 2️⃣ 配置数据库连接
@@ -158,7 +158,7 @@ dotnet build SupabaseDBManager.csproj -c Release
 ## 📂 项目结构
 
 ```
-tools/SupabaseDBManager/
+SupabaseDBManager/
 ├── SupabaseDBManager.csproj    # 项目文件
 ├── appsettings.json                     # 配置文件（用户填写）
 ├── appsettings.example.json             # 配置示例（模板）
