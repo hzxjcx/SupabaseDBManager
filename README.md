@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**一个开源的、企业级的 Supabase PostgreSQL 数据库管理工具**
+**一个开源的图形化 Supabase PostgreSQL 数据库管理工具**
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-8.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
