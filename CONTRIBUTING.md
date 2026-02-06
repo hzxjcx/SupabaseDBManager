@@ -85,7 +85,7 @@ git checkout -b fix/your-bug-fix
 #### 项目结构
 
 ```
-tools/SupabaseDBManager/
+SupabaseDBManager/
 ├── Models/          # 数据模型
 ├── Services/        # 业务服务
 ├── Views/           # WPF 视图
