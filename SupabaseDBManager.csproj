@@ -13,6 +13,7 @@
     <FileVersion>1.0.0.0</FileVersion>
 
     <Platforms>x64</Platforms>
+    <ApplicationIcon>ico.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebugType>none</DebugType>

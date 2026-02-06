@@ -53,9 +53,9 @@ public class DataEditorService
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
                     var columnName = reader.GetName(i);
-                    var dataType = reader.GetFieldType(i);
 
-                    var dataColumn = new DataColumn(columnName, dataType);
+                    // 使用 object 类型以支持 null 值和任何数据类型
+                    var dataColumn = new DataColumn(columnName, typeof(object));
                     dataTable.Columns.Add(dataColumn);
                 }
 

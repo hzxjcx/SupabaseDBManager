@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(if exist bin rmdir /s /q:*)",
-      "Bash(if exist obj rmdir /s /q obj)",
-      "Bash(powershell:*)"
-    ]
-  }
-}

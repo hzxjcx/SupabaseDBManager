@@ -454,7 +454,8 @@
                     <!-- 数据网格 -->
                     <DataGrid x:Name="TableDataDataGrid" Grid.Row="2"
                               AutoGenerateColumns="True" CanUserAddRows="False"
-                              GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                              GridLinesVisibility="All" HeadersVisibility="Column"
+                              HorizontalGridLinesBrush="#DDD" VerticalGridLinesBrush="#EEE"
                               Background="White" BorderBrush="#DDD" BorderThickness="1"
                               FontSize="12" LoadingRow="OnTableDataDataGridLoadingRow"
                               AutoGeneratingColumn="OnTableDataDataGridAutoGeneratingColumn"/>
