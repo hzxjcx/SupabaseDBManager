@@ -533,6 +533,71 @@ public partial class MainWindow : Window
         }
     }
 
+    private async void OnCopyTriggerWithFunctionDdlClick(object sender, RoutedEventArgs e)
+    {
+        if (TriggersDataGrid.SelectedItems.Count == 0)
+        {
+            MessageBox.Show("请先选择至少一个触发器", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        try
+        {
+            EnsureConnection();
+
+            // 确保函数列表已加载
+            if (_allFunctions == null)
+            {
+                try
+                {
+                    _allFunctions = await _metadataService.GetFunctionsAsync();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"加载函数列表失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
+            var ddlList = new List<string>();
+            var processedFunctions = new HashSet<string>(); // 避免重复添加函数DDL
+
+            foreach (var item in TriggersDataGrid.SelectedItems)
+            {
+                if (item is TriggerInfo trigger)
+                {
+                    // 查找触发器使用的函数
+                    var function = _allFunctions.FirstOrDefault(f =>
+                        f.Name.Equals(trigger.FunctionName, StringComparison.OrdinalIgnoreCase) ||
+                        f.FullName.Equals(trigger.FunctionName, StringComparison.OrdinalIgnoreCase));
+
+                    // 先添加函数DDL（如果找到且未处理过）
+                    if (function != null && !processedFunctions.Contains(function.FullName))
+                    {
+                        ddlList.Add(_sqlGenerationService.GenerateCreateFunctionDdl(function));
+                        processedFunctions.Add(function.FullName);
+                    }
+
+                    // 再添加触发器DDL
+                    ddlList.Add(_sqlGenerationService.GenerateCreateTriggerDdl(trigger));
+                }
+            }
+
+            if (ddlList.Count > 0)
+            {
+                var allDdl = string.Join(Environment.NewLine + Environment.NewLine, ddlList);
+                Clipboard.SetText(allDdl);
+                var triggerCount = TriggersDataGrid.SelectedItems.Count;
+                var functionCount = processedFunctions.Count;
+                MessageBox.Show($"已复制 {triggerCount} 个触发器和 {functionCount} 个函数的完整 DDL 到剪贴板！", "成功", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"复制 DDL 失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     // Indexes 标签页
     private async void OnRefreshIndexesClick(object sender, RoutedEventArgs e)
     {

@@ -117,6 +117,7 @@ dotnet build SupabaseDBManager.csproj -c Release
 
 - 📋 查看所有触发器
 - 📄 复制 CREATE TRIGGER DDL
+- 📦 复制触发器+函数完整 DDL（包含触发器调用的函数定义）
 - 🔍 查看触发时机和事件
 
 ### Indexes（索引）

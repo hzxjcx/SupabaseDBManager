@@ -20,13 +20,16 @@ public class SqlExecutionService
         _connectionService = connectionService;
     }
 
-    private NpgsqlConnection? GetConnection()
+    private NpgsqlConnection GetConnection()
     {
         var conn = _connectionService.GetConnection();
-        if (conn == null || conn.State != System.Data.ConnectionState.Open)
+
+        // 打开连接（如果尚未打开）
+        if (conn.State != System.Data.ConnectionState.Open)
         {
-            throw new InvalidOperationException("数据库未连接");
+            conn.Open();
         }
+
         return conn;
     }
 
@@ -40,7 +43,7 @@ public class SqlExecutionService
 
         try
         {
-            var conn = GetConnection();
+            using var conn = GetConnection();
 
             using var command = new NpgsqlCommand(sql, conn);
             using var reader = await command.ExecuteReaderAsync();
@@ -95,7 +98,7 @@ public class SqlExecutionService
 
         try
         {
-            var conn = GetConnection();
+            using var conn = GetConnection();
 
             using var command = new NpgsqlCommand(sql, conn);
             var rowsAffected = await command.ExecuteNonQueryAsync();
@@ -205,7 +208,7 @@ public class SqlExecutionService
     {
         try
         {
-            var conn = GetConnection();
+            using var conn = GetConnection();
 
             using var command = new NpgsqlCommand(sql, conn);
             var result = await command.ExecuteScalarAsync();
@@ -260,7 +263,7 @@ public class SqlExecutionService
 
         try
         {
-            var conn = GetConnection();
+            using var conn = GetConnection();
 
             using var command = new NpgsqlCommand(sql, conn);
             using var reader = await command.ExecuteReaderAsync();
