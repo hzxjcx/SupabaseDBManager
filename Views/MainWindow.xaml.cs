@@ -23,6 +23,7 @@ public partial class MainWindow : Window
     private DataEditorService _dataEditorService = null!;
     private ConfigService _configService = null!;
     private AppConfigService _appConfigService = null!;
+    private ExportService _exportService = null!;
 
     private string? _currentConnectionString;
     private TextBox? _connectionStringTextBox; // 用于显示连接字符串的 TextBox
@@ -61,6 +62,7 @@ public partial class MainWindow : Window
         services.AddSingleton<DataEditorService>();
         services.AddSingleton<ConfigService>();
         services.AddSingleton<AppConfigService>();
+        services.AddSingleton<ExportService>();
 
         var provider = services.BuildServiceProvider();
 
@@ -71,6 +73,7 @@ public partial class MainWindow : Window
         _dataEditorService = provider.GetRequiredService<DataEditorService>();
         _configService = provider.GetRequiredService<ConfigService>();
         _appConfigService = provider.GetRequiredService<AppConfigService>();
+        _exportService = provider.GetRequiredService<ExportService>();
     }
 
     private void LoadSavedConfig()
@@ -1229,5 +1232,77 @@ public partial class MainWindow : Window
             await LoadAllTablesAsync();
         }
         // 移除未连接时的自动加载尝试，避免错误提示
+    }
+
+    // 数据库导出
+    private async void OnExportDatabaseClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            EnsureConnection();
+
+            // 禁用导出按钮，防止重复点击
+            ExportButton.IsEnabled = false;
+            ExportButton.Content = "导出中...";
+
+            // 构建导出选项
+            var options = new ExportOptions
+            {
+                Format = SqlFormatRadioButton.IsChecked == true ? ExportFormat.Sql : ExportFormat.Json,
+                IncludeTables = IncludeTablesCheckBox.IsChecked == true,
+                IncludePolicies = IncludePoliciesCheckBox.IsChecked == true,
+                IncludeTriggers = IncludeTriggersCheckBox.IsChecked == true,
+                IncludeIndexes = IncludeIndexesCheckBox.IsChecked == true,
+                IncludeFunctions = IncludeFunctionsCheckBox.IsChecked == true,
+                IncludeViews = IncludeViewsCheckBox.IsChecked == true,
+                IncludeDropStatements = IncludeDropStatementsCheckBox.IsChecked == true
+            };
+
+            // 进度回调
+            void UpdateProgress(ExportProgress progress)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ExportStageTextBlock.Text = progress.CurrentStage;
+                    ExportStepTextBlock.Text = progress.CurrentStep;
+                    ExportProgressBar.Value = progress.ProgressPercentage;
+
+                    if (progress.Error != null)
+                    {
+                        ExportStageTextBlock.Text = "导出失败";
+                        ExportStepTextBlock.Text = progress.Error;
+                    }
+                });
+            }
+
+            // 执行导出
+            var filePath = await _exportService.ExportToFileAsync(options, UpdateProgress);
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                ExportStageTextBlock.Text = "导出完成";
+                ExportStepTextBlock.Text = $"文件已保存到: {filePath}";
+                MessageBox.Show(
+                    $"数据库导出成功！\n\n文件位置: {filePath}",
+                    "导出成功",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            ExportStageTextBlock.Text = "导出失败";
+            ExportStepTextBlock.Text = ex.Message;
+            MessageBox.Show(
+                $"导出失败: {ex.Message}",
+                "错误",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+        finally
+        {
+            ExportButton.IsEnabled = true;
+            ExportButton.Content = "📦 导出数据库";
+        }
     }
 }

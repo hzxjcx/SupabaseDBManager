@@ -22,6 +22,7 @@
 
 - 🔍 **完整的元数据浏览** - 查看所有表、策略、触发器、索引、函数、视图
 - 📋 **一键复制 DDL** - 快速获取 CREATE 语句，方便 AI 分析
+- 📦 **整体数据库导出** - 导出所有数据库配置到 SQL 或 JSON 文件
 - 🚀 **SQL 查询器** - 直接执行自定义 SQL 查询
 - 📊 **数据编辑器** - 可视化浏览和编辑表数据
 - 🔐 **安全配置存储** - 使用 DPAPI 加密敏感信息
@@ -154,6 +155,23 @@ dotnet build SupabaseDBManager.csproj -c Release
 - 🔒 自动区分 INSERT/UPDATE/DELETE 操作
 - 💫 支持将字段设置为 NULL（删除内容后保存）
 
+### 数据库导出（Database Export）
+
+- 📦 **整体导出** - 一键导出整个数据库的所有配置
+- 🎯 **格式选择**
+  - SQL 格式：生成完整的 SQL 脚本，可直接在数据库中执行
+  - JSON 格式：生成结构化的 JSON 文件，便于版本控制和 AI 分析
+- ✅ **可选择性导出**
+  - 表结构（包含列信息、主键、外键）
+  - 索引
+  - RLS 策略
+  - 触发器
+  - 函数
+  - 视图
+- 📊 **实时进度显示** - 显示导出阶段、当前对象和进度百分比
+- 🔄 **事务包装** - SQL 导出使用事务确保数据完整性
+- 💾 **可选 DROP 语句** - 重建数据库时自动删除已存在的对象
+
 ---
 
 ## 📂 项目结构
@@ -178,13 +196,17 @@ SupabaseDBManager/
 │   ├── QueryResult.cs
 │   ├── DataRow.cs
 │   ├── DatabaseConfig.cs
-│   └── AppSettings.cs
+│   ├── AppSettings.cs
+│   ├── ExportOptions.cs                  # 导出选项
+│   ├── ExportProgress.cs                 # 导出进度
+│   └── DatabaseExport.cs                 # 数据库导出模型
 ├── Services/                             # 服务层
 │   ├── SupabaseConnectionService.cs      # 连接服务
 │   ├── MetadataQueryService.cs           # 元数据查询
 │   ├── SqlGenerationService.cs           # DDL 生成
 │   ├── SqlExecutionService.cs            # SQL 执行
 │   ├── DataEditorService.cs              # 数据编辑
+│   ├── ExportService.cs                  # 数据库导出
 │   ├── ConfigService.cs                  # 配置服务（DPAPI）
 │   └── AppConfigService.cs               # 配置文件读取
 ├── README.md                             # 本文件
@@ -331,7 +353,14 @@ Database=postgres
 
 ### Q: 如何批量导出 DDL？
 
-**A**: 当前版本支持单个对象的 DDL 复制。批量导出功能计划在 v1.1 中实现。
+**A**: 使用"数据库导出"标签页：
+1. 选择导出格式（SQL 或 JSON）
+2. 勾选要导出的对象类型
+3. 点击"导出数据库"按钮
+4. 选择保存位置
+5. 等待导出完成
+
+SQL 格式适合直接在数据库中执行，JSON 格式适合版本控制和 AI 分析。
 
 ### Q: 如何将字段设置为 NULL？
 
@@ -412,7 +441,7 @@ Database=postgres
 
 ## 🗺️ 路线图
 
-- [ ] v1.1 - 批量操作和查询历史
+- [ ] v1.1 - 查询历史和批量操作增强
 - [ ] v1.2 - SQL 编辑器增强和结果导出
 - [ ] v2.0 - 跨平台支持和插件系统
 
@@ -426,9 +455,9 @@ Database=postgres
 | DDL 生成 | ✅ 完成 | 自动生成 CREATE 语句 |
 | SQL 查询器 | ✅ 完成 | 支持自定义查询 |
 | 数据编辑器 | ✅ 完成 | 支持增删改查和 NULL 值 |
+| 数据库导出 | ✅ 完成 | 支持 SQL/JSON 格式，可选对象类型 |
 | 配置管理 | ✅ 完成 | 加密存储配置 |
 | Pooler 支持 | ✅ 完成 | 自动禁用 PREPARE 语句 |
-| 批量导出 | 🚧 计划中 | v1.1 |
 | 查询历史 | 🚧 计划中 | v1.1 |
 | 结果导出 | 🚧 计划中 | v1.2 |
 | 跨平台 | 🚧 计划中 | v2.0 |
